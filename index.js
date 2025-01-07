@@ -109,20 +109,23 @@ app.get("/get-user", authenticateToken, async (req, res) => {
 
 
 //route to handle image upload
+//route to handle image upload
 app.post('/image-upload', upload.single("image"), (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({
                 error: true,
                 message: "no image uploaded"
-            })
+            });
         }
-        const imageUrl = `http://localhost:8000/uploads/${req.file.filename}`
-        res.status(200).json({ imageUrl })
+        // Change to deployed URL
+        const imageUrl = `https://tbj-backend-jgjy.onrender.com/uploads/${req.file.filename}`;
+        res.status(200).json({ imageUrl });
     } catch (err) {
-        res.status(500).json({ error: true, message: error.message })
+        res.status(500).json({ error: true, message: err.message });
     }
-})
+});
+
 
 
 //delete an image from uploads folder
@@ -150,10 +153,10 @@ app.delete("/delete-image", async (req, res) => {
     }
 })
 
-//serve static files from the uploads ans assests directory
-app.use("/uploads", express.static(path.join(__dirname, "uploads")))
-app.use("/assets", express.static(path.join(__dirname, "assets")))
 
+//serve static files from the uploads and assets directory
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/assets", express.static(path.join(__dirname, "assets")));
 
 
 //add travel story
