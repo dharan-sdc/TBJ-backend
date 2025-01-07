@@ -93,18 +93,18 @@ app.post("/login", async (req, res) => {
 
 //get user
 app.get("/get-user", authenticateToken, async (req, res) => {
-    const { userId } = req.user
+    const { userId } = req.user;
 
-    const isUser = await User.findOne({ _id: userId })
+    const isUser = await User.findOne({ _id: userId });
     if (!isUser) {
-        res.sendStatus(401)
+        return res.sendStatus(401); // Use return here.
     }
     return res.json({
         user: isUser,
         message: "user is here"
-    })
+    });
+});
 
-})
 
 
 
@@ -122,7 +122,8 @@ app.post('/image-upload', upload.single("image"), (req, res) => {
         const imageUrl = `https://tbj-backend-jgjy.onrender.com/uploads/${req.file.filename}`;
         res.status(200).json({ imageUrl });
     } catch (err) {
-        res.status(500).json({ error: true, message: err.message });
+       res.status(500).json({ error: true, message: err.message });
+
     }
 });
 
@@ -148,9 +149,10 @@ app.delete("/delete-image", async (req, res) => {
         } else {
             res.status(200).json({ error: true, message: "image not found" })
         }
-    } catch (err) {
-        res.status(500).json({ error: true, message: "image not found" })
-    }
+    }catch (err) {
+    return res.status(500).json({ error: true, message: "Image could not be deleted" });
+}
+
 })
 
 
@@ -294,11 +296,11 @@ app.put("/update-is-favourite/:id", authenticateToken, async (req, res) => {
 
 //search travel stories
 app.get("/search", authenticateToken, async (req, res) => {
-    const { query } = req.query
-    const { userId } = req.user
+    const { query } = req.query;
+    const { userId } = req.user;
 
     if (!query) {
-        return res.status(404).json({ error: true, message: "Query is required" })
+        return res.status(404).json({ error: true, message: "Query is required" });
     }
 
     try {
@@ -309,13 +311,14 @@ app.get("/search", authenticateToken, async (req, res) => {
                 { story: { $regex: query, $options: 'i' } },
                 { visitedLocation: { $regex: query, $options: "i" } }
             ]
-        }).sort({ isFavourite: -1 })
+        }).sort({ isFavourite: -1 });
 
-        res.status(200).json({ stories: searchResults })
+        return res.status(200).json({ stories: searchResults });
     } catch (err) {
-        res.status(200).json({ stories: searchResults })
+        return res.status(500).json({ error: true, message: err.message });
     }
-})
+});
+
 
 
 //filter travel stories by date range
